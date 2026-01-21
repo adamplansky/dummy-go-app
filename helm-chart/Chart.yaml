@@ -1,0 +1,12 @@
+apiVersion: v2
+name: dummy-go-app
+description: A dummy Go application using Podinfo
+type: application
+version: 1.0.0
+appVersion: "6.9.4"
+
+dependencies:
+  - name: podinfo
+    version: "6.9.4"
+    repository: "https://stefanprodan.github.io/podinfo"
+

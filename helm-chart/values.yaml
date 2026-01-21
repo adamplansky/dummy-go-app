@@ -1,0 +1,32 @@
+podinfo:
+  replicaCount: 2
+  ingress:
+    enabled: true
+    className: nginx
+    hosts:
+      - host: podinfo.localhost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+
+  image:
+    repository: ghcr.io/stefanprodan/podinfo
+    tag: 6.0.0
+    pullPolicy: IfNotPresent
+
+  ui:
+    color: "#34577c"
+    message: "My Dummy Go Application"
+
+  service:
+    enabled: true
+    type: ClusterIP
+    httpPort: 9898
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
