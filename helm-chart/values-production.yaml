@@ -1,0 +1,27 @@
+# Production environment overrides
+# Inherits from values.yaml, only override what's different
+
+podinfo:
+  replicaCount: 3
+
+  image:
+    pullPolicy: IfNotPresent
+
+  ingress:
+    hosts:
+      - host: podinfo.localhost
+
+  ui:
+    color: "#2e7d32"  # Green - Production
+    message: "🚀 PRODUCTION Environment - dummy-go-app"
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+
+  logLevel: info
+

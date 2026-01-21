@@ -1,32 +1,26 @@
+# Base values - common configuration for all environments
+# Environment-specific values files (values-dev.yaml, values-production.yaml)
+# should only override what differs from these defaults.
+
 podinfo:
-  replicaCount: 2
+  # Image configuration
+  image:
+    repository: ghcr.io/stefanprodan/podinfo
+    tag: 6.9.4
+
+  # Ingress - base structure (host overridden per environment)
   ingress:
     enabled: true
     className: nginx
-    hosts:
-      - host: podinfo.localhost
-        paths:
-          - path: /
-            pathType: ImplementationSpecific
+    paths:
+      - path: /
+        pathType: ImplementationSpecific
 
-  image:
-    repository: ghcr.io/stefanprodan/podinfo
-    tag: 6.0.0
-    pullPolicy: IfNotPresent
-
-  ui:
-    color: "#34577c"
-    message: "My Dummy Go Application from ARGOCD"
-
+  # Service configuration (same across all environments)
   service:
     enabled: true
     type: ClusterIP
     httpPort: 9898
 
-  resources:
-    limits:
-      cpu: 500m
-      memory: 256Mi
-    requests:
-      cpu: 100m
-      memory: 64Mi
+  hpa:
+    enabled: false

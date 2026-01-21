@@ -1,0 +1,27 @@
+# Dev environment overrides
+# Inherits from values.yaml, only override what's different
+
+podinfo:
+  replicaCount: 1
+
+  image:
+    pullPolicy: Always
+
+  ingress:
+    hosts:
+      - host: podinfo-dev.localhost
+
+  ui:
+    color: "#4a90d9"  # Blue - Development
+    message: "🔧 DEV Environment - dummy-go-app"
+
+  resources:
+    limits:
+      cpu: 250m
+      memory: 128Mi
+    requests:
+      cpu: 50m
+      memory: 32Mi
+
+  logLevel: debug
+
