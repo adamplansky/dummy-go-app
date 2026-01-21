@@ -12,9 +12,6 @@ podinfo:
   ingress:
     enabled: true
     className: nginx
-    paths:
-      - path: /
-        pathType: ImplementationSpecific
 
   # Service configuration (same across all environments)
   service:

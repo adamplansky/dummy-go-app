@@ -9,10 +9,13 @@ podinfo:
 
   ingress:
     hosts:
-      - host: podinfo.localhost
+      - host: podinfo-production.localhost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
 
   ui:
-    color: "#2e7d32"  # Green - Production
+    color: "#2e7d32" # Green - Production
     message: "🚀 PRODUCTION Environment - dummy-go-app"
 
   resources:
@@ -24,4 +27,3 @@ podinfo:
       memory: 64Mi
 
   logLevel: info
-

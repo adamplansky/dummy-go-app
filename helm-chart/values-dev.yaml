@@ -10,9 +10,11 @@ podinfo:
   ingress:
     hosts:
       - host: podinfo-dev.localhost
-
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
   ui:
-    color: "#4a90d9"  # Blue - Development
+    color: "#4a90d9" # Blue - Development
     message: "🔧 DEV Environment - dummy-go-app"
 
   resources:
@@ -24,4 +26,3 @@ podinfo:
       memory: 32Mi
 
   logLevel: debug
-
