@@ -1,114 +1,177 @@
-# Dummy Go App Helm Chart
+# Dummy Go App
 
-This guide explains how to create a custom Helm chart wrapper for a dummy Go application that uses [Podinfo](https://github.com/stefanprodan/podinfo) as a dependency.
+A multi-environment Helm chart for deploying [Podinfo](https://github.com/stefanprodan/podinfo) using ArgoCD GitOps workflow.
 
 ## Overview
 
-Podinfo is a tiny web application made with Go that showcases best practices of running microservices in Kubernetes. This chart wraps Podinfo as a dependency, allowing you to customize and extend it for your needs.
+This project provides a GitOps-ready Helm chart wrapper for Podinfo with multi-environment support (dev/production). It follows DRY principles with a base values configuration and environment-specific overrides.
 
-## Prerequisites
+**Features:**
+- ArgoCD-based GitOps deployment
+- Multi-environment support (dev, production)
+- DRY values structure (base + overrides)
+- Automated sync with self-healing
 
-- Kubernetes cluster (local or remote)
+## Project Structure
+
+```
+├── argocd/
+│   └── applications/
+│       ├── dev.yaml              # ArgoCD Application for dev
+│       └── production.yaml       # ArgoCD Application for production
+├── helm-chart/
+│   ├── Chart.yaml                # Chart definition with Podinfo dependency
+│   ├── values.yaml               # Base values (shared across environments)
+│   ├── values-dev.yaml           # Dev-specific overrides
+│   ├── values-production.yaml    # Production-specific overrides
+│   └── charts/                   # Downloaded dependencies
+└── README.md
+```
+
+### Values Hierarchy
+
+Values are loaded in order (later files override earlier):
+1. `values.yaml` — Common defaults (image, ingress structure, service config)
+2. `values-{env}.yaml` — Environment overrides (replicas, resources, UI, host)
+
+| Setting | Base | Dev | Production |
+|---------|------|-----|------------|
+| Replicas | - | 1 | 3 |
+| Host | - | podinfo-dev.localhost | podinfo-production.localhost |
+| UI Color | - | 🔵 Blue | 🟢 Green |
+| Resources | - | Lower | Higher |
+| Log Level | - | debug | info |
+
+---
+
+## ArgoCD Deployment (Recommended)
+
+### Prerequisites
+
+- Kubernetes cluster with ArgoCD installed
+- ArgoCD can access this Git repository
 - `kubectl` configured to access your cluster
-- `helm` v3.x installed
-- Docker (optional, for building custom images)
 
-### Step 1: Create Chart Structure
+### Deploy Dev Environment
 
 ```bash
-cd dummy-go-app
-mkdir -p helm-chart/templates
-cd helm-chart
+kubectl apply -f argocd/applications/dev.yaml
 ```
 
-### Step 2: Create Chart.yaml
-
-Create `Chart.yaml`:
-
-```yaml
-apiVersion: v2
-name: dummy-go-app
-description: A dummy Go application using Podinfo
-type: application
-version: 1.0.0
-appVersion: "6.9.4"
-
-dependencies:
-  - name: podinfo
-    version: "6.9.4"
-    repository: "https://stefanprodan.github.io/podinfo"
-```
-
-### Step 3: Create values.yaml
-
-Create `values.yaml`:
-
-```yaml
-# Override podinfo default values
-podinfo:
-  replicaCount: 2
-
-  image:
-    repository: ghcr.io/stefanprodan/podinfo
-    tag: 6.9.4
-    pullPolicy: IfNotPresent
-
-  ui:
-    color: "#34577c"
-    message: "My Dummy Go Application"
-
-  service:
-    enabled: true
-    type: ClusterIP
-    httpPort: 9898
-
-  resources:
-    limits:
-      cpu: 500m
-      memory: 256Mi
-    requests:
-      cpu: 100m
-      memory: 64Mi
-```
-
-### Step 4: Update Dependencies
+### Deploy Production Environment
 
 ```bash
-helm dependency update
+kubectl apply -f argocd/applications/production.yaml
 ```
 
-### Step 5: Install the Chart
+### Verify Deployments
 
 ```bash
-helm install dummy-app . \
-  --namespace dummy-app \
-  --create-namespace
+# Check ArgoCD applications
+kubectl get applications -n argocd
 
-# Or with custom values
-helm install dummy-app . \
-  --namespace dummy-app \
-  --create-namespace \
-  --set podinfo.replicaCount=3 \
-  --set podinfo.ui.message="Custom Message"
+# Check pods in each environment
+kubectl get pods -n dummy-app-dev
+kubectl get pods -n dummy-app-production
+
+# Using ArgoCD CLI
+argocd app list
+argocd app get dummy-go-app-dev
+argocd app get dummy-go-app-production
 ```
+
+### Sync Applications
+
+```bash
+# Sync dev
+argocd app sync dummy-go-app-dev
+
+# Sync production
+argocd app sync dummy-go-app-production
+```
+
+---
 
 ## Accessing the Application
 
-```bash
-# Port forward to access the app
-kubectl port-forward -n dummy-app svc/dummy-app-podinfo 9898:9898
+### Dev Environment
 
+```bash
+kubectl port-forward -n dummy-app-dev svc/dummy-go-app-dev-podinfo 9898:9898
 # Visit http://localhost:9898
 ```
 
-## Cleanup
+Or via ingress: `http://podinfo-dev.localhost`
+
+### Production Environment
 
 ```bash
-# Uninstall the Helm release
-helm uninstall dummy-app -n dummy-app
+kubectl port-forward -n dummy-app-production svc/dummy-go-app-production-podinfo 9898:9898
+# Visit http://localhost:9898
+```
 
-# Delete the namespace
-kubectl delete namespace dummy-app
+Or via ingress: `http://podinfo-production.localhost`
+
+---
+
+## Local Development with Helm
+
+For local testing without ArgoCD:
+
+### Prerequisites
+
+- `helm` v3.x installed
+- `kubectl` configured to access your cluster
+
+### Update Dependencies
+
+```bash
+cd helm-chart
+helm dependency update
+```
+
+### Install with Dev Values
+
+```bash
+helm install dummy-app-dev . \
+  -f values.yaml \
+  -f values-dev.yaml \
+  --namespace dummy-app-dev \
+  --create-namespace
+```
+
+### Install with Production Values
+
+```bash
+helm install dummy-app-prod . \
+  -f values.yaml \
+  -f values-production.yaml \
+  --namespace dummy-app-production \
+  --create-namespace
+```
+
+---
+
+## Cleanup
+
+### ArgoCD
+
+```bash
+# Delete applications
+kubectl delete -f argocd/applications/dev.yaml
+kubectl delete -f argocd/applications/production.yaml
+
+# Delete namespaces
+kubectl delete namespace dummy-app-dev
+kubectl delete namespace dummy-app-production
+```
+
+### Helm
+
+```bash
+helm uninstall dummy-app-dev -n dummy-app-dev
+helm uninstall dummy-app-prod -n dummy-app-production
+kubectl delete namespace dummy-app-dev dummy-app-production
 ```
 
 
