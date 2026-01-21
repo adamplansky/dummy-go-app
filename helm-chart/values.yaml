@@ -16,7 +16,7 @@ podinfo:
 
   ui:
     color: "#34577c"
-    message: "My Dummy Go Application"
+    message: "My Dummy Go Application from ARGOCD"
 
   service:
     enabled: true
