@@ -15,7 +15,7 @@ podinfo:
             pathType: ImplementationSpecific
   ui:
     color: "#4a90d9" # Blue - Development
-    message: "DEV Environment - dummy-go-app"
+    message: "dev-dev Environment - dummy-go-app"
 
   resources:
     limits:
