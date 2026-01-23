@@ -14,15 +14,14 @@ spec:
     path: helm-chart
     helm:
       valueFiles:
-        - values.yaml      # Base values (loaded first)
-        - values-dev.yaml  # Dev overrides (loaded second, overrides base)
+        - values.yaml # Base values (loaded first)
+        - values-dev.yaml # Dev overrides (loaded second, overrides base)
   destination:
     server: https://kubernetes.default.svc
     namespace: dummy-app-dev
   syncPolicy:
-    automated:
-      prune: true
-      selfHeal: true
+    # automated:
+    #   prune: true
+    #   selfHeal: true
     syncOptions:
       - CreateNamespace=true
-

@@ -14,15 +14,14 @@ spec:
     path: helm-chart
     helm:
       valueFiles:
-        - values.yaml            # Base values (loaded first)
+        - values.yaml # Base values (loaded first)
         - values-production.yaml # Production overrides (loaded second, overrides base)
   destination:
     server: https://kubernetes.default.svc
     namespace: dummy-app-production
   syncPolicy:
-    automated:
-      prune: false      # Don't auto-delete resources in production
-      selfHeal: true
+    # automated:
+    #   prune: false      # Don't auto-delete resources in production
+    #   selfHeal: true
     syncOptions:
       - CreateNamespace=true
-
