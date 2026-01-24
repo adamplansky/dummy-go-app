@@ -16,7 +16,7 @@ podinfo:
 
   ui:
     color: "#2e7d32" # Green - Production
-    message: "PRODUCTION2 kargo Environment - dummy-go-app"
+    message: "PRODUCTION2 strict semver kargo Environment - dummy-go-app"
 
   resources:
     limits:

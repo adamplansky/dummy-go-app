@@ -11,5 +11,5 @@ spec:
           - helm-chart
         commitSelectionStrategy: NewestFromBranch
         branch: kargo
-        #strictSemvers: true # default true
-        strictSemvers: false
+        strictSemvers: true # default true
+        #strictSemvers: false
