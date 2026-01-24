@@ -149,7 +149,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-production-podinfo-grpc-test-tqhbo
+  name: dummy-go-app-production-podinfo-grpc-test-nanon
   namespace: dummy-app-production
   labels:
     helm.sh/chart: podinfo-6.9.4
@@ -174,7 +174,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-production-podinfo-jwt-test-gu2o6
+  name: dummy-go-app-production-podinfo-jwt-test-yoafw
   namespace: dummy-app-production
   labels:
     helm.sh/chart: podinfo-6.9.4
@@ -206,7 +206,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-production-podinfo-service-test-l4cv4
+  name: dummy-go-app-production-podinfo-service-test-jyipg
   namespace: dummy-app-production
   labels:
     helm.sh/chart: podinfo-6.9.4
