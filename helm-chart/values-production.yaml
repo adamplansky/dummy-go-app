@@ -16,7 +16,7 @@ podinfo:
 
   ui:
     color: "#2e7d32" # Green - Production
-    message: "PRODUCTION Environment - dummy-go-app"
+    message: "PRODUCTION kargo Environment - dummy-go-app"
 
   resources:
     limits:
