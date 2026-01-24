@@ -1,0 +1,13 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Warehouse
+metadata:
+  name: dummy-go-app
+  namespace: dummy-go-app
+spec:
+  subscriptions:
+    - git:
+        repoURL: https://github.com/adamplansky/dummy-go-app.git
+        includePaths:
+          - helm-chart/**
+        commitSelectionStrategy: NewestFromBranch
+        branch: kargo

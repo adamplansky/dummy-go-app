@@ -1,0 +1,43 @@
+apiVersion: argoproj.io/v1alpha1
+kind: ApplicationSet
+metadata:
+  name: dummy-go-app
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/application-set-managed: "true"
+spec:
+  generators:
+    - list:
+        elements:
+          - env: dev
+            namespace: dummy-app-dev
+            valuesFile: values-dev.yaml
+          - env: production
+            namespace: dummy-app-production
+            valuesFile: values-production.yaml
+  template:
+    metadata:
+      name: dummy-go-app-{{env}}
+      namespace: argocd
+      labels:
+        environment: "{{env}}"
+        app: dummy-go-app
+      annotations:
+        kargo.akuity.io/authorized-stage: "dummy-go-app:{{env}}"
+    spec:
+      project: default
+      source:
+        repoURL: https://github.com/adamplansky/dummy-go-app.git
+        targetRevision: HEAD
+        path: helm-chart
+        helm:
+          valueFiles:
+            - values.yaml
+            - "{{valuesFile}}"
+      destination:
+        server: https://kubernetes.default.svc
+        namespace: "{{namespace}}"
+      syncPolicy:
+        syncOptions:
+          - CreateNamespace=true
+

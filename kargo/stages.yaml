@@ -1,0 +1,59 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: dev
+  namespace: dummy-go-app
+spec:
+  requestedFreight:
+    - origin:
+        kind: Warehouse
+        name: dummy-go-app
+      sources:
+        direct: true
+  promotionTemplate:
+    spec:
+      steps:
+        - uses: git-clone
+          config:
+            repoURL: https://github.com/adamplansky/dummy-go-app.git
+            checkout:
+              - fromFreight: true
+                path: ./src
+        - uses: argocd-update
+          config:
+            apps:
+              - name: dummy-go-app-dev
+                sources:
+                  - repoURL: https://github.com/adamplansky/dummy-go-app.git
+                    desiredCommitFromStep: git-clone
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: production
+  namespace: dummy-go-app
+spec:
+  requestedFreight:
+    - origin:
+        kind: Warehouse
+        name: dummy-go-app
+      sources:
+        stages:
+          - dev
+  promotionTemplate:
+    spec:
+      steps:
+        - uses: git-clone
+          config:
+            repoURL: https://github.com/adamplansky/dummy-go-app.git
+            checkout:
+              - fromFreight: true
+                path: ./src
+        - uses: argocd-update
+          config:
+            apps:
+              - name: dummy-go-app-production
+                sources:
+                  - repoURL: https://github.com/adamplansky/dummy-go-app.git
+                    desiredCommitFromStep: git-clone
+
