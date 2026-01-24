@@ -10,6 +10,9 @@ spec:
         name: dummy-go-app
       sources:
         direct: true
+  verification:
+    analysisTemplates:
+      - name: integration-test
   promotionTemplate:
     spec:
       vars:
@@ -40,7 +43,7 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app-${{ ctx.stage }}
+            releaseName: dummy-go-app
             namespace: ${{ vars.targetNamespace }}
             valuesFiles:
               - ${{ vars.srcPath }}/helm-chart/values.yaml
@@ -79,6 +82,9 @@ spec:
       sources:
         stages:
           - dev
+  verification:
+    analysisTemplates:
+      - name: integration-test
   promotionTemplate:
     spec:
       vars:
@@ -109,7 +115,7 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app-${{ ctx.stage }}
+            releaseName: dummy-go-app
             namespace: ${{ vars.targetNamespace }}
             valuesFiles:
               - ${{ vars.srcPath }}/helm-chart/values.yaml
@@ -148,6 +154,9 @@ spec:
       sources:
         stages:
           - staging
+  verification:
+    analysisTemplates:
+      - name: integration-test
   promotionTemplate:
     spec:
       vars:
@@ -178,7 +187,7 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app-${{ ctx.stage }}
+            releaseName: dummy-go-app
             namespace: ${{ vars.targetNamespace }}
             valuesFiles:
               - ${{ vars.srcPath }}/helm-chart/values.yaml

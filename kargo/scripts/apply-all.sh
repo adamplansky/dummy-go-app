@@ -12,4 +12,5 @@ sleep 2  # wait for namespace
 kubectl apply \
     -f projectconfig.yaml \
     -f warehouse.yaml \
+    -f analysis-template.yaml \
     -f stages.yaml

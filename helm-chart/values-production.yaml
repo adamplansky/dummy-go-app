@@ -14,10 +14,10 @@ podinfo:
           - path: /
             pathType: ImplementationSpecific
 
-  ui:
-    #    color: "#2e7d32" # Green - Production
-    message: "PRODUCTION Environment - dummy-go-app"
-
+  # ui:
+  #   #    color: "#2e7d32" # Green - Production
+  #   message: "PRODUCTION Environment - dummy-go-app"
+  #
   resources:
     limits:
       cpu: 500m

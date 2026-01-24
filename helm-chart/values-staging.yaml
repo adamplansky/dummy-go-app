@@ -14,7 +14,7 @@ podinfo:
           - path: /
             pathType: ImplementationSpecific
   ui:
-    message: "Staging Environment - dummy-go-app"
+    color: "#CC562F"
 
   resources:
     limits:
@@ -25,4 +25,3 @@ podinfo:
       memory: 64Mi
 
   logLevel: info
-
