@@ -31,7 +31,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/adamplansky/dummy-go-app.git
-        targetRevision: kargo # Must match the branch Kargo Warehouse watches
+        targetRevision: main # Must match the branch Kargo Warehouse watches
         path: helm-chart
         helm:
           valueFiles:
