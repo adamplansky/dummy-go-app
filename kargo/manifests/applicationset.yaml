@@ -30,7 +30,7 @@ spec:
     spec:
       project: default
       source:
-        repoURL: https://github.com/adamplansky/dummy-go-app.git
+        repoURL: git@github.com:adamplansky/dummy-go-app.git
         targetRevision: stage/{{env}}
         path: .
       destination:

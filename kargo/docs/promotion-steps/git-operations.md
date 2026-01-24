@@ -1,5 +1,9 @@
 # Git Operations in Kargo
 
+> ⚠️ **SSH Key Required**: Git push operations require SSH credentials with write access.
+> Run `./scripts/setup-git-credentials.sh` and add the key to GitHub.
+> See the main [README](../../README.md) for details.
+
 ## Worktrees: Multiple branches at once
 
 Kargo uses **git worktrees** to checkout multiple branches simultaneously:

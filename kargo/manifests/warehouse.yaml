@@ -6,7 +6,7 @@ metadata:
 spec:
   subscriptions:
     - git:
-        repoURL: https://github.com/adamplansky/dummy-go-app.git
+        repoURL: git@github.com:adamplansky/dummy-go-app.git
         includePaths:
           - helm-chart
         commitSelectionStrategy: NewestFromBranch #or SemVer

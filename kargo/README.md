@@ -2,6 +2,20 @@
 
 This guide explains the Kargo progressive delivery setup for the dummy-go-app learning project.
 
+> ⚠️ **IMPORTANT: SSH Key Required for Promotions**
+>
+> Both Kargo and ArgoCD need SSH credentials with **write access** to the repository.
+> Kargo pushes rendered manifests to Git branches (`stage/dev`, `stage/staging`, `stage/production`).
+>
+> **Before applying Kargo resources, you MUST:**
+> 1. Run the setup script: `./scripts/setup-git-credentials.sh`
+>    - Generates an SSH deploy key (if needed)
+>    - Creates Kubernetes secret for Kargo
+>    - Configures ArgoCD repository credentials
+> 2. Add the public key to GitHub with **write access**: https://github.com/adamplansky/dummy-go-app/settings/keys
+>
+> Without this, promotions will fail with: `fatal: could not read Username for 'https://github.com'`
+
 ## What is Kargo?
 
 **Kargo** is a progressive delivery tool built on top of ArgoCD that adds:
@@ -114,30 +128,34 @@ kargo/
 
 ## Git Credentials (SSH)
 
-Kargo needs SSH access to push commits. Use a deploy key, not personal keys.
+Both **Kargo** and **ArgoCD** need SSH access to the repository. Use the shared setup script:
 
 ```bash
-./kargo/scripts/setup-git-credentials.sh  # create secret (generates key if needed)
-./kargo/scripts/test-git-credentials.sh   # verify key works
-./kargo/scripts/delete-git-credentials.sh # remove secret
+./scripts/setup-git-credentials.sh  # sets up both Kargo AND ArgoCD credentials
 ```
+
+This script:
+1. Generates an SSH deploy key (if not exists)
+2. Creates a Kubernetes secret for Kargo in the `dummy-go-app` namespace
+3. Configures ArgoCD repository credentials (via `argocd repo add`)
 
 Environment variables:
 
-| Variable | Default |
-|----------|---------|
-| `NAMESPACE` | `dummy-go-app` |
-| `SECRET_NAME` | `github-creds` |
-| `REPO_URL` | `git@github.com:adamplansky/dummy-go-app.git` |
-| `SSH_KEY_PATH` | `~/.ssh/kargo_deploy_key` |
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `NAMESPACE` | `dummy-go-app` | Kargo namespace for secret |
+| `SECRET_NAME` | `github-creds` | Kubernetes secret name |
+| `REPO_URL` | `git@github.com:adamplansky/dummy-go-app.git` | Repository SSH URL |
+| `SSH_KEY_PATH` | `~/.ssh/kargo_deploy_key` | Local SSH key path |
+| `SETUP_ARGOCD` | `true` | Also configure ArgoCD |
 
 Key rotation:
 
 ```bash
 ./kargo/scripts/delete-git-credentials.sh
 rm ~/.ssh/kargo_deploy_key*
-# remove old key from GitHub
-./kargo/scripts/setup-git-credentials.sh
+# Remove old key from GitHub, then re-run:
+./scripts/setup-git-credentials.sh
 ```
 
 ---

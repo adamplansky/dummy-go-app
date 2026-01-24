@@ -14,7 +14,7 @@ spec:
     spec:
       vars:
         - name: gitopsRepo
-          value: https://github.com/adamplansky/dummy-go-app.git
+          value: git@github.com:adamplansky/dummy-go-app.git
         - name: srcPath
           value: ./src
         - name: outPath
@@ -38,15 +38,15 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
+            releaseName: dummy-go-app
             valuesFiles:
-              - values-${{ ctx.stage }}.yaml
+              - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
             outPath: ${{ vars.outPath }}/manifests.yaml
         - uses: git-commit
           as: commit
           config:
             path: ${{ vars.outPath }}
-            messageFromSteps:
-              - helm-template
+            message: "Promoted to ${{ ctx.stage }}"
         - uses: git-push
           config:
             path: ${{ vars.outPath }}
@@ -76,7 +76,7 @@ spec:
     spec:
       vars:
         - name: gitopsRepo
-          value: https://github.com/adamplansky/dummy-go-app.git
+          value: git@github.com:adamplansky/dummy-go-app.git
         - name: srcPath
           value: ./src
         - name: outPath
@@ -100,15 +100,15 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
+            releaseName: dummy-go-app
             valuesFiles:
-              - values-${{ ctx.stage }}.yaml
+              - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
             outPath: ${{ vars.outPath }}/manifests.yaml
         - uses: git-commit
           as: commit
           config:
             path: ${{ vars.outPath }}
-            messageFromSteps:
-              - helm-template
+            message: "Promoted to ${{ ctx.stage }}"
         - uses: git-push
           config:
             path: ${{ vars.outPath }}
@@ -138,7 +138,7 @@ spec:
     spec:
       vars:
         - name: gitopsRepo
-          value: https://github.com/adamplansky/dummy-go-app.git
+          value: git@github.com:adamplansky/dummy-go-app.git
         - name: srcPath
           value: ./src
         - name: outPath
@@ -162,15 +162,15 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
+            releaseName: dummy-go-app
             valuesFiles:
-              - values-${{ ctx.stage }}.yaml
+              - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
             outPath: ${{ vars.outPath }}/manifests.yaml
         - uses: git-commit
           as: commit
           config:
             path: ${{ vars.outPath }}
-            messageFromSteps:
-              - helm-template
+            message: "Promoted to ${{ ctx.stage }}"
         - uses: git-push
           config:
             path: ${{ vars.outPath }}
@@ -182,4 +182,3 @@ spec:
                 sources:
                   - repoURL: ${{ vars.gitopsRepo }}
                     desiredRevision: ${{ outputs.commit.commit }}
-

@@ -2,6 +2,10 @@
 
 This guide helps you debug common Kargo promotion issues.
 
+> ⚠️ **SSH Key Required**: If you see `fatal: could not read Username for 'https://github.com'`,
+> you need to set up SSH credentials. Run `./scripts/setup-git-credentials.sh` and add
+> the public key to GitHub with write access. See the main [README](../README.md) for details.
+
 ## Quick Diagnostic Commands
 
 ```bash

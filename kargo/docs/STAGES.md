@@ -1,5 +1,9 @@
 # Kargo Stages Guide
 
+> ⚠️ **SSH Key Required**: Stages push rendered manifests to Git. You must set up SSH credentials first!
+> Run `./scripts/setup-git-credentials.sh` and add the key to GitHub with write access.
+> See the main [README](../README.md) for details.
+
 A **Stage** is an environment (dev, staging, production) in your delivery pipeline. Stages define *what* artifacts to deploy, *how* to deploy them, and *when* they're ready for the next environment.
 
 ```
