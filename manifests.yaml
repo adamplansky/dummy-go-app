@@ -69,7 +69,7 @@ spec:
             - --random-error=false
           env:
           - name: PODINFO_UI_MESSAGE
-            value: "staging | 2026-January-24 18:7:28"
+            value: "staging | 2026-January-24 18:8:15"
           - name: PODINFO_UI_COLOR
             value: "#CC562F"
           ports:
@@ -149,7 +149,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-podinfo-grpc-test-yqtuh
+  name: dummy-go-app-podinfo-grpc-test-amre6
   namespace: dummy-app-staging
   labels:
     helm.sh/chart: podinfo-6.9.4
@@ -174,7 +174,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-podinfo-jwt-test-9odso
+  name: dummy-go-app-podinfo-jwt-test-9qajg
   namespace: dummy-app-staging
   labels:
     helm.sh/chart: podinfo-6.9.4
@@ -206,7 +206,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-podinfo-service-test-kyufy
+  name: dummy-go-app-podinfo-service-test-3wh4o
   namespace: dummy-app-staging
   labels:
     helm.sh/chart: podinfo-6.9.4
