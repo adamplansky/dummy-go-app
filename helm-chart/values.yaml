@@ -15,7 +15,7 @@ podinfo:
 
   ui:
     message: "trigger|ssh"
-    color: "#CC561E"
+    color: "#CC562E"
 
   # Service configuration (same across all environments)
   service:
