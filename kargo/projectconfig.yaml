@@ -7,6 +7,8 @@ spec:
   promotionPolicies:
     - stage: dev
       autoPromotionEnabled: true
+    - stage: staging
+      autoPromotionEnabled: false
     - stage: production
       autoPromotionEnabled: false
 

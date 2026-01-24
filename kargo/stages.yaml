@@ -34,7 +34,7 @@ spec:
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
 metadata:
-  name: production
+  name: staging
   namespace: dummy-go-app
 spec:
   requestedFreight:
@@ -44,6 +44,40 @@ spec:
       sources:
         stages:
           - dev
+  promotionTemplate:
+    spec:
+      vars:
+        - name: gitRepo
+          value: https://github.com/adamplansky/dummy-go-app.git
+      steps:
+        - uses: git-clone
+          as: clone
+          config:
+            repoURL: ${{ vars.gitRepo }}
+            checkout:
+              - commit: ${{ commitFrom(vars.gitRepo).ID }}
+                path: ./src
+        - uses: argocd-update
+          config:
+            apps:
+              - name: dummy-go-app-staging
+                sources:
+                  - repoURL: ${{ vars.gitRepo }}
+                    desiredRevision: ${{ outputs.clone.commits["./src"] }}
+---
+apiVersion: kargo.akuity.io/v1alpha1
+kind: Stage
+metadata:
+  name: production
+  namespace: dummy-go-app
+spec:
+  requestedFreight:
+    - origin:
+        kind: Warehouse
+        name: dummy-go-app
+      sources:
+        stages:
+          - staging
   promotionTemplate:
     spec:
       vars:

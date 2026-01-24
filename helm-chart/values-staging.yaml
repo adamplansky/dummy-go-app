@@ -1,0 +1,28 @@
+# Staging environment overrides
+# Inherits from values.yaml, only override what's different
+
+podinfo:
+  replicaCount: 2
+
+  image:
+    pullPolicy: Always
+
+  ingress:
+    hosts:
+      - host: podinfo-staging.localhost
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  ui:
+    message: "Staging Environment - dummy-go-app"
+
+  resources:
+    limits:
+      cpu: 500m
+      memory: 256Mi
+    requests:
+      cpu: 100m
+      memory: 64Mi
+
+  logLevel: info
+

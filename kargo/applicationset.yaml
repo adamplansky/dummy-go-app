@@ -12,6 +12,9 @@ spec:
           - env: dev
             namespace: dummy-app-dev
             valuesFile: values-dev.yaml
+          - env: staging
+            namespace: dummy-app-staging
+            valuesFile: values-staging.yaml
           - env: production
             namespace: dummy-app-production
             valuesFile: values-production.yaml
