@@ -14,7 +14,7 @@ podinfo:
     className: nginx
 
   ui:
-    message: "trigger2"
+    message: "trigger|ssh"
     color: "#CC561E"
 
   # Service configuration (same across all environments)
