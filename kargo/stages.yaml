@@ -12,20 +12,24 @@ spec:
         direct: true
   promotionTemplate:
     spec:
+      vars:
+        - name: gitRepo
+          value: https://github.com/adamplansky/dummy-go-app.git
       steps:
         - uses: git-clone
+          as: clone
           config:
-            repoURL: https://github.com/adamplansky/dummy-go-app.git
+            repoURL: ${{ vars.gitRepo }}
             checkout:
-              - fromFreight: true
+              - commit: ${{ commitFrom(vars.gitRepo).ID }}
                 path: ./src
         - uses: argocd-update
           config:
             apps:
               - name: dummy-go-app-dev
                 sources:
-                  - repoURL: https://github.com/adamplansky/dummy-go-app.git
-                    desiredCommitFromStep: git-clone
+                  - repoURL: ${{ vars.gitRepo }}
+                    desiredRevision: ${{ outputs.clone.commits["./src"] }}
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -42,18 +46,22 @@ spec:
           - dev
   promotionTemplate:
     spec:
+      vars:
+        - name: gitRepo
+          value: https://github.com/adamplansky/dummy-go-app.git
       steps:
         - uses: git-clone
+          as: clone
           config:
-            repoURL: https://github.com/adamplansky/dummy-go-app.git
+            repoURL: ${{ vars.gitRepo }}
             checkout:
-              - fromFreight: true
+              - commit: ${{ commitFrom(vars.gitRepo).ID }}
                 path: ./src
         - uses: argocd-update
           config:
             apps:
               - name: dummy-go-app-production
                 sources:
-                  - repoURL: https://github.com/adamplansky/dummy-go-app.git
-                    desiredCommitFromStep: git-clone
+                  - repoURL: ${{ vars.gitRepo }}
+                    desiredRevision: ${{ outputs.clone.commits["./src"] }}
 

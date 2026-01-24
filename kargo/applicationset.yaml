@@ -28,7 +28,7 @@ spec:
       project: default
       source:
         repoURL: https://github.com/adamplansky/dummy-go-app.git
-        targetRevision: HEAD
+        targetRevision: kargo # Must match the branch Kargo Warehouse watches
         path: helm-chart
         helm:
           valueFiles:
@@ -40,4 +40,3 @@ spec:
       syncPolicy:
         syncOptions:
           - CreateNamespace=true
-

@@ -9,7 +9,5 @@ spec:
         repoURL: https://github.com/adamplansky/dummy-go-app.git
         includePaths:
           - helm-chart
-        commitSelectionStrategy: NewestFromBranch
+        commitSelectionStrategy: NewestFromBranch #or SemVer
         branch: kargo
-        strictSemvers: true # default true
-        #strictSemvers: false
