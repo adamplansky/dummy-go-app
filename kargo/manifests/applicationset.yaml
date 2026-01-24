@@ -31,12 +31,8 @@ spec:
       project: default
       source:
         repoURL: https://github.com/adamplansky/dummy-go-app.git
-        targetRevision: main # Must match the branch Kargo Warehouse watches
-        path: helm-chart
-        helm:
-          valueFiles:
-            - values.yaml
-            - "{{valuesFile}}"
+        targetRevision: stage/{{env}}
+        path: .
       destination:
         server: https://kubernetes.default.svc
         namespace: "{{namespace}}"

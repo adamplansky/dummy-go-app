@@ -1,17 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-cd "$(dirname "$0")"
+cd "$(dirname "$0")/../manifests"
 
 kubectl apply \
     -f applicationset.yaml \
     -f project.yaml
 
-# Wait for namespace to be created by Project
-sleep 2
+sleep 2  # wait for namespace
 
 kubectl apply \
     -f projectconfig.yaml \
     -f warehouse.yaml \
     -f stages.yaml
-

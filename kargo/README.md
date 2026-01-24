@@ -26,41 +26,41 @@ This guide explains the Kargo progressive delivery setup for the dummy-go-app le
 ## Project Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                        Kargo Project: dummy-go-app                       │
-├─────────────────────────────────────────────────────────────────────────┤
-│                                                                          │
-│   ┌──────────────────┐                                                  │
-│   │    WAREHOUSE     │                                                  │
-│   │   (Git Repo)     │                                                  │
-│   │                  │                                                  │
-│   │ Watches:         │                                                  │
-│   │ helm-chart/      │                                                  │
-│   └────────┬─────────┘                                                  │
-│            │                                                            │
-│            │ New commit detected → Creates FREIGHT                      │
-│            ▼                                                            │
-│   ┌──────────────────┐         ┌──────────────────┐                    │
-│   │    DEV STAGE     │         │ PRODUCTION STAGE │                    │
-│   │                  │         │                  │                    │
-│   │ Auto-promotion   │────────▶│ Manual approval  │                    │
-│   │ (immediate)      │ promote │ (requires OK)    │                    │
-│   │                  │         │                  │                    │
-│   └────────┬─────────┘         └────────┬─────────┘                    │
-│            │                            │                              │
-│            ▼                            ▼                              │
-│   ┌──────────────────┐         ┌──────────────────┐                    │
-│   │ ArgoCD App       │         │ ArgoCD App       │                    │
-│   │ dummy-go-app-dev │         │ dummy-go-app-    │                    │
-│   │                  │         │ production       │                    │
-│   └──────────────────┘         └──────────────────┘                    │
-│                                                                          │
-└─────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────┐
+│                            Kargo Project: dummy-go-app                                 │
+├───────────────────────────────────────────────────────────────────────────────────────┤
+│                                                                                        │
+│   ┌──────────────────┐                                                                │
+│   │    WAREHOUSE     │                                                                │
+│   │   (Git Repo)     │                                                                │
+│   │                  │                                                                │
+│   │ Watches:         │                                                                │
+│   │ helm-chart/      │                                                                │
+│   └────────┬─────────┘                                                                │
+│            │                                                                          │
+│            │ New commit detected → Creates FREIGHT                                    │
+│            ▼                                                                          │
+│   ┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐         │
+│   │    DEV STAGE     │       │  STAGING STAGE   │       │ PRODUCTION STAGE │         │
+│   │                  │       │                  │       │                  │         │
+│   │ Auto-promotion   │──────▶│ Auto-promotion   │──────▶│ Auto-promotion   │         │
+│   │ (immediate)      │promote│ (immediate)      │promote│ (immediate)      │         │
+│   │                  │       │                  │       │                  │         │
+│   └────────┬─────────┘       └────────┬─────────┘       └────────┬─────────┘         │
+│            │                          │                          │                    │
+│            ▼                          ▼                          ▼                    │
+│   ┌──────────────────┐       ┌──────────────────┐       ┌──────────────────┐         │
+│   │ ArgoCD App       │       │ ArgoCD App       │       │ ArgoCD App       │         │
+│   │ dummy-go-app-dev │       │ dummy-go-app-    │       │ dummy-go-app-    │         │
+│   │                  │       │ staging          │       │ production       │         │
+│   └──────────────────┘       └──────────────────┘       └──────────────────┘         │
+│                                                                                        │
+└───────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 **Promotion Flow:**
 ```
-Git Push → Warehouse detects → Freight created → Dev (auto) → Production (manual)
+Git Push → Warehouse detects → Freight created → Dev (auto) → Staging (auto) → Production (auto)
 ```
 
 ---
@@ -91,23 +91,54 @@ kubectl get pods -n cert-manager
 
 ```
 kargo/
-├── README.md              # This file
-├── applicationset.yaml    # ArgoCD ApplicationSet (generates dev + production apps)
-├── project.yaml           # Kargo Project (creates namespace)
-├── projectconfig.yaml     # Promotion policies (auto for dev, manual for production)
-├── warehouse.yaml         # Git repository watcher
-└── stages.yaml            # Dev and Production stages (in one file)
+├── README.md
+├── manifests/                   # Kargo resource definitions
+│   ├── applicationset.yaml      # ArgoCD ApplicationSet (creates apps for each env)
+│   ├── project.yaml             # Kargo Project (creates namespace)
+│   ├── projectconfig.yaml       # Promotion policies (auto-promotion settings)
+│   ├── warehouse.yaml           # Git repository watcher
+│   └── stages.yaml              # Dev, staging, and production stages
+├── scripts/                     # Operational scripts
+│   ├── apply-all.sh             # Apply all manifests
+│   ├── setup-git-credentials.sh # Create SSH secret
+│   ├── test-git-credentials.sh  # Test SSH key from secret
+│   └── delete-git-credentials.sh# Delete SSH secret
+└── docs/                        # Detailed documentation
+    ├── STAGES.md
+    ├── DEBUG-PROMOTIONS.md
+    └── promotion-steps/
+        └── git-operations.md
 ```
 
-### File Descriptions
+---
 
-| File | Purpose |
-|------|---------|
-| `applicationset.yaml` | Replaces separate ArgoCD apps with a single ApplicationSet |
-| `project.yaml` | Creates the `dummy-go-app` Kargo project and namespace |
-| `projectconfig.yaml` | Defines promotion policies (Kargo v1.5+) |
-| `warehouse.yaml` | Watches `helm-chart/` path in Git for changes |
-| `stages.yaml` | Defines dev (auto) and production (manual) stages |
+## Git Credentials (SSH)
+
+Kargo needs SSH access to push commits. Use a deploy key, not personal keys.
+
+```bash
+./kargo/scripts/setup-git-credentials.sh  # create secret (generates key if needed)
+./kargo/scripts/test-git-credentials.sh   # verify key works
+./kargo/scripts/delete-git-credentials.sh # remove secret
+```
+
+Environment variables:
+
+| Variable | Default |
+|----------|---------|
+| `NAMESPACE` | `dummy-go-app` |
+| `SECRET_NAME` | `github-creds` |
+| `REPO_URL` | `git@github.com:adamplansky/dummy-go-app.git` |
+| `SSH_KEY_PATH` | `~/.ssh/kargo_deploy_key` |
+
+Key rotation:
+
+```bash
+./kargo/scripts/delete-git-credentials.sh
+rm ~/.ssh/kargo_deploy_key*
+# remove old key from GitHub
+./kargo/scripts/setup-git-credentials.sh
+```
 
 ---
 
@@ -135,57 +166,52 @@ kubectl get pods -n kargo
 ### Step 2: Apply ArgoCD ApplicationSet
 
 ```bash
-# Apply the ApplicationSet (generates both dev and production apps)
-kubectl apply -f kargo/applicationset.yaml
-
-# Verify the applications were created
+kubectl apply -f kargo/manifests/applicationset.yaml
 kubectl get applications -n argocd | grep dummy-go-app
 ```
 
-### Step 3: Apply Kargo Resources (Order Matters!)
+### Step 3: Apply Kargo Resources
 
 ```bash
-# 1. Create the project first (creates namespace)
-kubectl apply -f kargo/project.yaml
+# Option A: Apply all at once
+./kargo/scripts/apply-all.sh
 
-# 2. Apply project config (promotion policies) - requires namespace to exist
-kubectl apply -f kargo/projectconfig.yaml
-
-# 3. Apply warehouse (watches for changes)
-kubectl apply -f kargo/warehouse.yaml
-
-# 4. Apply stages (dev and production in one file)
-kubectl apply -f kargo/stages.yaml
+# Option B: Apply manually (order matters)
+kubectl apply -f kargo/manifests/project.yaml
+kubectl apply -f kargo/manifests/projectconfig.yaml
+kubectl apply -f kargo/manifests/warehouse.yaml
+kubectl apply -f kargo/manifests/stages.yaml
 ```
-
-**⚠️ Important:** Apply in order! Project creates namespace, then projectconfig, warehouse, and stages.
 
 ---
 
 ## How Promotions Work
 
-### Automatic Promotion (Dev Stage)
+### Automatic Promotion (All Stages)
 
 When the warehouse detects a new commit in `helm-chart/`:
 
 1. **Freight Created** - Kargo creates a new "freight" artifact
-2. **Auto-Promotion** - Dev stage automatically promotes (no approval needed)
-3. **ArgoCD Sync** - Kargo triggers ArgoCD to sync `dummy-go-app-dev`
+2. **Auto-Promotion to Dev** - Dev stage automatically promotes (no approval needed)
+3. **Auto-Promotion to Staging** - Once dev succeeds, staging auto-promotes
+4. **Auto-Promotion to Production** - Once staging succeeds, production auto-promotes
+5. **ArgoCD Sync** - Kargo triggers ArgoCD to sync each environment's app
 
 ```yaml
-# In stage-dev.yaml - automatic promotion policy
+# In projectconfig.yaml - all stages have auto-promotion enabled
 spec:
-  promotionMechanisms:
-    argoCDAppUpdates:
-    - appName: dummy-go-app-dev
-  subscriptions:
-    warehouse: dummy-go-app-warehouse
-  # No requestedFreight approval required = auto-promotion
+  promotionPolicies:
+    - stage: dev
+      autoPromotionEnabled: true
+    - stage: staging
+      autoPromotionEnabled: true
+    - stage: production
+      autoPromotionEnabled: true
 ```
 
-### Manual Promotion (Production Stage)
+### Manual Promotion (If Needed)
 
-Production requires explicit approval:
+If you disable auto-promotion for a stage, you can manually promote:
 
 ```bash
 # Option 1: Via Kargo CLI
@@ -284,6 +310,7 @@ kubectl get applications -n argocd | grep dummy-go-app
 
 # Verify apps are synced
 argocd app get dummy-go-app-dev
+argocd app get dummy-go-app-staging
 argocd app get dummy-go-app-production
 ```
 
@@ -399,11 +426,10 @@ kubectl get serviceaccount -n kargo
 1. ✅ Understand Kargo concepts (you are here!)
 2. ✅ All Kargo resources are already created in this folder
 3. ⬜ Install Kargo in your cluster
-4. ⬜ Apply resources in order: `project.yaml` → `warehouse.yaml` → `stages.yaml`
+4. ⬜ Apply resources in order: `project.yaml` → `projectconfig.yaml` → `warehouse.yaml` → `stages.yaml`
 5. ⬜ Apply ApplicationSet: `applicationset.yaml`
-6. ⬜ Make a change to `helm-chart/` and watch auto-promotion to dev
-7. ⬜ Manually promote to production
-8. ⬜ Try rolling back a promotion
+6. ⬜ Make a change to `helm-chart/` and watch auto-promotion through dev → staging → production
+7. ⬜ Try rolling back a promotion
 
 Happy GitOps! 🚀
 
