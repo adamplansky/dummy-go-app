@@ -21,6 +21,8 @@ spec:
           value: ./out
         - name: targetBranch
           value: stage/${{ ctx.stage }}
+        - name: targetNamespace
+          value: dummy-app-dev
       steps:
         - uses: git-clone
           as: clone
@@ -38,15 +40,20 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app
+            releaseName: dummy-go-app-${{ ctx.stage }}
+            namespace: ${{ vars.targetNamespace }}
             valuesFiles:
+              - ${{ vars.srcPath }}/helm-chart/values.yaml
               - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
             outPath: ${{ vars.outPath }}/manifests.yaml
+            setValues:
+              - key: podinfo.ui.message
+                value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
         - uses: git-commit
           as: commit
           config:
             path: ${{ vars.outPath }}
-            message: "Promoted to ${{ ctx.stage }}"
+            message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
         - uses: git-push
           config:
             path: ${{ vars.outPath }}
@@ -83,6 +90,8 @@ spec:
           value: ./out
         - name: targetBranch
           value: stage/${{ ctx.stage }}
+        - name: targetNamespace
+          value: dummy-app-staging
       steps:
         - uses: git-clone
           as: clone
@@ -100,15 +109,20 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app
+            releaseName: dummy-go-app-${{ ctx.stage }}
+            namespace: ${{ vars.targetNamespace }}
             valuesFiles:
+              - ${{ vars.srcPath }}/helm-chart/values.yaml
               - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
             outPath: ${{ vars.outPath }}/manifests.yaml
+            setValues:
+              - key: podinfo.ui.message
+                value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
         - uses: git-commit
           as: commit
           config:
             path: ${{ vars.outPath }}
-            message: "Promoted to ${{ ctx.stage }}"
+            message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
         - uses: git-push
           config:
             path: ${{ vars.outPath }}
@@ -145,6 +159,8 @@ spec:
           value: ./out
         - name: targetBranch
           value: stage/${{ ctx.stage }}
+        - name: targetNamespace
+          value: dummy-app-production
       steps:
         - uses: git-clone
           as: clone
@@ -162,15 +178,20 @@ spec:
         - uses: helm-template
           config:
             path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app
+            releaseName: dummy-go-app-${{ ctx.stage }}
+            namespace: ${{ vars.targetNamespace }}
             valuesFiles:
+              - ${{ vars.srcPath }}/helm-chart/values.yaml
               - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
             outPath: ${{ vars.outPath }}/manifests.yaml
+            setValues:
+              - key: podinfo.ui.message
+                value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
         - uses: git-commit
           as: commit
           config:
             path: ${{ vars.outPath }}
-            message: "Promoted to ${{ ctx.stage }}"
+            message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
         - uses: git-push
           config:
             path: ${{ vars.outPath }}
