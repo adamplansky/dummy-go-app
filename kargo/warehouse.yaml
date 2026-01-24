@@ -10,4 +10,4 @@ spec:
         includePaths:
           - helm-chart
         commitSelectionStrategy: NewestFromBranch #or SemVer
-        branch: main
+        branch: kargo2
