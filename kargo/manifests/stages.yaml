@@ -13,23 +13,51 @@ spec:
   promotionTemplate:
     spec:
       vars:
-        - name: gitRepo
+        - name: gitopsRepo
           value: https://github.com/adamplansky/dummy-go-app.git
+        - name: srcPath
+          value: ./src
+        - name: outPath
+          value: ./out
+        - name: targetBranch
+          value: stage/${{ ctx.stage }}
       steps:
         - uses: git-clone
           as: clone
           config:
-            repoURL: ${{ vars.gitRepo }}
+            repoURL: ${{ vars.gitopsRepo }}
             checkout:
-              - commit: ${{ commitFrom(vars.gitRepo).ID }}
-                path: ./src
+              - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
+                path: ${{ vars.srcPath }}
+              - branch: ${{ vars.targetBranch }}
+                create: true
+                path: ${{ vars.outPath }}
+        - uses: git-clear
+          config:
+            path: ${{ vars.outPath }}
+        - uses: helm-template
+          config:
+            path: ${{ vars.srcPath }}/helm-chart
+            valuesFiles:
+              - values-${{ ctx.stage }}.yaml
+            outPath: ${{ vars.outPath }}/manifests.yaml
+        - uses: git-commit
+          as: commit
+          config:
+            path: ${{ vars.outPath }}
+            messageFromSteps:
+              - helm-template
+        - uses: git-push
+          config:
+            path: ${{ vars.outPath }}
+            targetBranch: ${{ vars.targetBranch }}
         - uses: argocd-update
           config:
             apps:
-              - name: dummy-go-app-dev
+              - name: dummy-go-app-${{ ctx.stage }}
                 sources:
-                  - repoURL: ${{ vars.gitRepo }}
-                    desiredRevision: ${{ outputs.clone.commits["./src"] }}
+                  - repoURL: ${{ vars.gitopsRepo }}
+                    desiredRevision: ${{ outputs.commit.commit }}
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -47,23 +75,51 @@ spec:
   promotionTemplate:
     spec:
       vars:
-        - name: gitRepo
+        - name: gitopsRepo
           value: https://github.com/adamplansky/dummy-go-app.git
+        - name: srcPath
+          value: ./src
+        - name: outPath
+          value: ./out
+        - name: targetBranch
+          value: stage/${{ ctx.stage }}
       steps:
         - uses: git-clone
           as: clone
           config:
-            repoURL: ${{ vars.gitRepo }}
+            repoURL: ${{ vars.gitopsRepo }}
             checkout:
-              - commit: ${{ commitFrom(vars.gitRepo).ID }}
-                path: ./src
+              - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
+                path: ${{ vars.srcPath }}
+              - branch: ${{ vars.targetBranch }}
+                create: true
+                path: ${{ vars.outPath }}
+        - uses: git-clear
+          config:
+            path: ${{ vars.outPath }}
+        - uses: helm-template
+          config:
+            path: ${{ vars.srcPath }}/helm-chart
+            valuesFiles:
+              - values-${{ ctx.stage }}.yaml
+            outPath: ${{ vars.outPath }}/manifests.yaml
+        - uses: git-commit
+          as: commit
+          config:
+            path: ${{ vars.outPath }}
+            messageFromSteps:
+              - helm-template
+        - uses: git-push
+          config:
+            path: ${{ vars.outPath }}
+            targetBranch: ${{ vars.targetBranch }}
         - uses: argocd-update
           config:
             apps:
-              - name: dummy-go-app-staging
+              - name: dummy-go-app-${{ ctx.stage }}
                 sources:
-                  - repoURL: ${{ vars.gitRepo }}
-                    desiredRevision: ${{ outputs.clone.commits["./src"] }}
+                  - repoURL: ${{ vars.gitopsRepo }}
+                    desiredRevision: ${{ outputs.commit.commit }}
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -81,21 +137,49 @@ spec:
   promotionTemplate:
     spec:
       vars:
-        - name: gitRepo
+        - name: gitopsRepo
           value: https://github.com/adamplansky/dummy-go-app.git
+        - name: srcPath
+          value: ./src
+        - name: outPath
+          value: ./out
+        - name: targetBranch
+          value: stage/${{ ctx.stage }}
       steps:
         - uses: git-clone
           as: clone
           config:
-            repoURL: ${{ vars.gitRepo }}
+            repoURL: ${{ vars.gitopsRepo }}
             checkout:
-              - commit: ${{ commitFrom(vars.gitRepo).ID }}
-                path: ./src
+              - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
+                path: ${{ vars.srcPath }}
+              - branch: ${{ vars.targetBranch }}
+                create: true
+                path: ${{ vars.outPath }}
+        - uses: git-clear
+          config:
+            path: ${{ vars.outPath }}
+        - uses: helm-template
+          config:
+            path: ${{ vars.srcPath }}/helm-chart
+            valuesFiles:
+              - values-${{ ctx.stage }}.yaml
+            outPath: ${{ vars.outPath }}/manifests.yaml
+        - uses: git-commit
+          as: commit
+          config:
+            path: ${{ vars.outPath }}
+            messageFromSteps:
+              - helm-template
+        - uses: git-push
+          config:
+            path: ${{ vars.outPath }}
+            targetBranch: ${{ vars.targetBranch }}
         - uses: argocd-update
           config:
             apps:
-              - name: dummy-go-app-production
+              - name: dummy-go-app-${{ ctx.stage }}
                 sources:
-                  - repoURL: ${{ vars.gitRepo }}
-                    desiredRevision: ${{ outputs.clone.commits["./src"] }}
+                  - repoURL: ${{ vars.gitopsRepo }}
+                    desiredRevision: ${{ outputs.commit.commit }}
 
