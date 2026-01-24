@@ -69,7 +69,7 @@ spec:
             - --random-error=false
           env:
           - name: PODINFO_UI_MESSAGE
-            value: "production | 2026-January-24 18:9:1"
+            value: "production | 2026-January-24 18:30:51"
           - name: PODINFO_UI_COLOR
             value: "#CC562E"
           ports:
@@ -149,7 +149,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-podinfo-grpc-test-gsckx
+  name: dummy-go-app-podinfo-grpc-test-j9krz
   namespace: dummy-app-production
   labels:
     helm.sh/chart: podinfo-6.9.4
@@ -174,7 +174,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-podinfo-jwt-test-lecfo
+  name: dummy-go-app-podinfo-jwt-test-vjbus
   namespace: dummy-app-production
   labels:
     helm.sh/chart: podinfo-6.9.4
@@ -206,7 +206,7 @@ spec:
 apiVersion: v1
 kind: Pod
 metadata:
-  name: dummy-go-app-podinfo-service-test-zmnhd
+  name: dummy-go-app-podinfo-service-test-bxjl5
   namespace: dummy-app-production
   labels:
     helm.sh/chart: podinfo-6.9.4
