@@ -14,7 +14,8 @@ podinfo:
     className: nginx
 
   ui:
-    color: "#e8b631"
+    #    color: "#e8b631"
+    color: "#CC561E"
 
   # Service configuration (same across all environments)
   service:
