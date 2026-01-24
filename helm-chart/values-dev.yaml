@@ -14,7 +14,7 @@ podinfo:
           - path: /
             pathType: ImplementationSpecific
   ui:
-    color: "#4a90d9" # Blue - Development
+    # color: "#4a90d9" # Blue - Development
     message: "dev-kargo! Environment - dummy-go-app"
 
   resources:

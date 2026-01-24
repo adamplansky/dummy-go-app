@@ -15,7 +15,7 @@ podinfo:
             pathType: ImplementationSpecific
 
   ui:
-    color: "#2e7d32" # Green - Production
+    #    color: "#2e7d32" # Green - Production
     message: "PRODUCTION2 strict semver kargo Environment - dummy-go-app"
 
   resources:

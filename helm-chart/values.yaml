@@ -13,6 +13,9 @@ podinfo:
     enabled: true
     className: nginx
 
+  ui:
+    color: "#e8b631"
+
   # Service configuration (same across all environments)
   service:
     enabled: true
