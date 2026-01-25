@@ -4,8 +4,13 @@ metadata:
   name: integration-test
   namespace: dummy-go-app
 spec:
+  args:
+  - name: stage
   metrics:
   - name: integration-test
+    count: 3
+    interval: 10s
+    failureLimit: 2
     provider:
       job:
         spec:
@@ -18,7 +23,15 @@ spec:
                 - sh
                 - -c
                 - |
-                  curl -sf http://dummy-go-app-podinfo:9898/env | grep -q 'PODINFO_UI_COLOR=#CC562E'
+                  set -x
+                  echo "Checking service: dummy-go-app-podinfo.dummy-app-{{args.stage}}.svc.cluster.local:9898"
+                  RESPONSE=$(curl -sv http://dummy-go-app-podinfo.dummy-app-{{args.stage}}.svc.cluster.local:9898/env 2>&1)
+                  echo "Response:"
+                  echo "$RESPONSE"
+                  echo "$RESPONSE" | grep -q 'PODINFO_UI_COLOR=#CC562E'
+                  RESULT=$?
+                  echo "Grep exit code: $RESULT (0=found, 1=not found)"
+                  exit $RESULT
               restartPolicy: Never
           backoffLimit: 1
 

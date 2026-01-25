@@ -13,6 +13,9 @@ spec:
   verification:
     analysisTemplates:
       - name: integration-test
+    args:
+      - name: stage
+        value: dev
   promotionTemplate:
     spec:
       steps:
@@ -35,6 +38,9 @@ spec:
   verification:
     analysisTemplates:
       - name: integration-test
+    args:
+      - name: stage
+        value: staging
   promotionTemplate:
     spec:
       steps:
@@ -57,6 +63,9 @@ spec:
   verification:
     analysisTemplates:
       - name: integration-test
+    args:
+      - name: stage
+        value: production
   promotionTemplate:
     spec:
       steps:
