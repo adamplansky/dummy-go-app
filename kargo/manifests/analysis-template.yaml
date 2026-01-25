@@ -12,9 +12,13 @@ spec:
           template:
             spec:
               containers:
-              - name: sleep
-                image: alpine:latest
-                command: [sleep, "10"]
+              - name: check-color
+                image: curlimages/curl:latest
+                command:
+                - sh
+                - -c
+                - |
+                  curl -sf http://dummy-go-app-podinfo:9898/env | grep -q 'PODINFO_UI_COLOR=#CC562E'
               restartPolicy: Never
           backoffLimit: 1
 
