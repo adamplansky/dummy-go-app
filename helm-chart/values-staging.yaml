@@ -13,8 +13,8 @@ podinfo:
         paths:
           - path: /
             pathType: ImplementationSpecific
-  ui:
-    color: "#CC562F"
+  # ui:
+  #   color: "#CC562F"
 
   resources:
     limits:
