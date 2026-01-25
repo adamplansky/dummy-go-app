@@ -13,4 +13,5 @@ kubectl apply \
     -f projectconfig.yaml \
     -f warehouse.yaml \
     -f analysis-template.yaml \
+    -f promotion-task.yaml \
     -f stages.yaml

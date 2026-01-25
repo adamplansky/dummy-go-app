@@ -15,59 +15,9 @@ spec:
       - name: integration-test
   promotionTemplate:
     spec:
-      vars:
-        - name: gitopsRepo
-          value: git@github.com:adamplansky/dummy-go-app.git
-        - name: srcPath
-          value: ./src
-        - name: outPath
-          value: ./out
-        - name: targetBranch
-          value: stage/${{ ctx.stage }}
-        - name: targetNamespace
-          value: dummy-app-dev
       steps:
-        - uses: git-clone
-          as: clone
-          config:
-            repoURL: ${{ vars.gitopsRepo }}
-            checkout:
-              - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
-                path: ${{ vars.srcPath }}
-              - branch: ${{ vars.targetBranch }}
-                create: true
-                path: ${{ vars.outPath }}
-        - uses: git-clear
-          config:
-            path: ${{ vars.outPath }}
-        - uses: helm-template
-          config:
-            path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app
-            namespace: ${{ vars.targetNamespace }}
-            valuesFiles:
-              - ${{ vars.srcPath }}/helm-chart/values.yaml
-              - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
-            outPath: ${{ vars.outPath }}/manifests.yaml
-            setValues:
-              - key: podinfo.ui.message
-                value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
-        - uses: git-commit
-          as: commit
-          config:
-            path: ${{ vars.outPath }}
-            message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
-        - uses: git-push
-          config:
-            path: ${{ vars.outPath }}
-            targetBranch: ${{ vars.targetBranch }}
-        - uses: argocd-update
-          config:
-            apps:
-              - name: dummy-go-app-${{ ctx.stage }}
-                sources:
-                  - repoURL: ${{ vars.gitopsRepo }}
-                    desiredRevision: ${{ outputs.commit.commit }}
+        - task:
+            name: helm-promote
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -87,59 +37,9 @@ spec:
       - name: integration-test
   promotionTemplate:
     spec:
-      vars:
-        - name: gitopsRepo
-          value: git@github.com:adamplansky/dummy-go-app.git
-        - name: srcPath
-          value: ./src
-        - name: outPath
-          value: ./out
-        - name: targetBranch
-          value: stage/${{ ctx.stage }}
-        - name: targetNamespace
-          value: dummy-app-staging
       steps:
-        - uses: git-clone
-          as: clone
-          config:
-            repoURL: ${{ vars.gitopsRepo }}
-            checkout:
-              - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
-                path: ${{ vars.srcPath }}
-              - branch: ${{ vars.targetBranch }}
-                create: true
-                path: ${{ vars.outPath }}
-        - uses: git-clear
-          config:
-            path: ${{ vars.outPath }}
-        - uses: helm-template
-          config:
-            path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app
-            namespace: ${{ vars.targetNamespace }}
-            valuesFiles:
-              - ${{ vars.srcPath }}/helm-chart/values.yaml
-              - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
-            outPath: ${{ vars.outPath }}/manifests.yaml
-            setValues:
-              - key: podinfo.ui.message
-                value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
-        - uses: git-commit
-          as: commit
-          config:
-            path: ${{ vars.outPath }}
-            message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
-        - uses: git-push
-          config:
-            path: ${{ vars.outPath }}
-            targetBranch: ${{ vars.targetBranch }}
-        - uses: argocd-update
-          config:
-            apps:
-              - name: dummy-go-app-${{ ctx.stage }}
-                sources:
-                  - repoURL: ${{ vars.gitopsRepo }}
-                    desiredRevision: ${{ outputs.commit.commit }}
+        - task:
+            name: helm-promote
 ---
 apiVersion: kargo.akuity.io/v1alpha1
 kind: Stage
@@ -159,56 +59,6 @@ spec:
       - name: integration-test
   promotionTemplate:
     spec:
-      vars:
-        - name: gitopsRepo
-          value: git@github.com:adamplansky/dummy-go-app.git
-        - name: srcPath
-          value: ./src
-        - name: outPath
-          value: ./out
-        - name: targetBranch
-          value: stage/${{ ctx.stage }}
-        - name: targetNamespace
-          value: dummy-app-production
       steps:
-        - uses: git-clone
-          as: clone
-          config:
-            repoURL: ${{ vars.gitopsRepo }}
-            checkout:
-              - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
-                path: ${{ vars.srcPath }}
-              - branch: ${{ vars.targetBranch }}
-                create: true
-                path: ${{ vars.outPath }}
-        - uses: git-clear
-          config:
-            path: ${{ vars.outPath }}
-        - uses: helm-template
-          config:
-            path: ${{ vars.srcPath }}/helm-chart
-            releaseName: dummy-go-app
-            namespace: ${{ vars.targetNamespace }}
-            valuesFiles:
-              - ${{ vars.srcPath }}/helm-chart/values.yaml
-              - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
-            outPath: ${{ vars.outPath }}/manifests.yaml
-            setValues:
-              - key: podinfo.ui.message
-                value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
-        - uses: git-commit
-          as: commit
-          config:
-            path: ${{ vars.outPath }}
-            message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
-        - uses: git-push
-          config:
-            path: ${{ vars.outPath }}
-            targetBranch: ${{ vars.targetBranch }}
-        - uses: argocd-update
-          config:
-            apps:
-              - name: dummy-go-app-${{ ctx.stage }}
-                sources:
-                  - repoURL: ${{ vars.gitopsRepo }}
-                    desiredRevision: ${{ outputs.commit.commit }}
+        - task:
+            name: helm-promote

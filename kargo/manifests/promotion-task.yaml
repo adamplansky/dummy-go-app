@@ -1,0 +1,58 @@
+apiVersion: kargo.akuity.io/v1alpha1
+kind: PromotionTask
+metadata:
+  name: helm-promote
+  namespace: dummy-go-app
+spec:
+  vars:
+    - name: gitopsRepo
+      value: git@github.com:adamplansky/dummy-go-app.git
+    - name: srcPath
+      value: ./src
+    - name: outPath
+      value: ./out
+    - name: releaseName
+      value: dummy-go-app
+  steps:
+    - uses: git-clone
+      as: clone
+      config:
+        repoURL: ${{ vars.gitopsRepo }}
+        checkout:
+          - commit: ${{ commitFrom(vars.gitopsRepo).ID }}
+            path: ${{ vars.srcPath }}
+          - branch: stage/${{ ctx.stage }}
+            create: true
+            path: ${{ vars.outPath }}
+    - uses: git-clear
+      config:
+        path: ${{ vars.outPath }}
+    - uses: helm-template
+      config:
+        path: ${{ vars.srcPath }}/helm-chart
+        releaseName: ${{ vars.releaseName }}
+        namespace: dummy-app-${{ ctx.stage }}
+        valuesFiles:
+          - ${{ vars.srcPath }}/helm-chart/values.yaml
+          - ${{ vars.srcPath }}/helm-chart/values-${{ ctx.stage }}.yaml
+        outPath: ${{ vars.outPath }}/manifests.yaml
+        setValues:
+          - key: podinfo.ui.message
+            value: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }}"
+    - uses: git-commit
+      as: commit
+      config:
+        path: ${{ vars.outPath }}
+        message: "${{ ctx.stage }} | ${{ string(now().Year()) }}-${{ string(now().Month()) }}-${{ string(now().Day()) }} ${{ string(now().Hour()) }}:${{ string(now().Minute()) }}:${{ string(now().Second()) }} | ${{ commitFrom(vars.gitopsRepo).Message }}"
+    - uses: git-push
+      config:
+        path: ${{ vars.outPath }}
+        targetBranch: stage/${{ ctx.stage }}
+    - uses: argocd-update
+      config:
+        apps:
+          - name: ${{ vars.releaseName }}-${{ ctx.stage }}
+            sources:
+              - repoURL: ${{ vars.gitopsRepo }}
+                desiredRevision: ${{ task.outputs.commit.commit }}
+
